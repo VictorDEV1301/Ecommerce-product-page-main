@@ -8,24 +8,32 @@ const quantidade = document.querySelector('#quantidade')
 const cartModify = document.querySelector('.cart-modify');
 
 let imagem = 1;
-let quantidadeItens = 0;
 
-window.addEventListener('resize', () => {
-  if (window.innerWidth > 700) {
-    menuMobile.style.display = 'flex';
-  } else {
-    menuMobile.style.display = 'none';
+window.addEventListener('resize', () => menuMobile.style.display = window.innerWidth > 700 ? 'flex' : 'none');
+
+function alteraDisplay(propriedade, display, valor) {
+  if (valor === 1) return propriedade.style.display = display;
+  if (valor === 2) return propriedade.style.display = propriedade.style.display === 'none' ? 'flex' : 'none';
+}
+
+let quantidadeItens = 0;
+function quantidadeMudanca(valor, propriedade) {
+  if (valor === 'minus') {
+    quantidadeItens--;
+    if (quantidadeItens < 0) quantidadeItens = 0;
+    propriedade.innerHTML = quantidadeItens;
+  } else if (valor === 'plus') {
+    quantidadeItens++;
+    if (quantidadeItens > 10) quantidadeItens = 10;
+    propriedade.innerHTML = quantidadeItens;
   }
-})
+}
 
 document.addEventListener('click', e => {
-  if (e.target.id === 'menu-button-mobile') menuMobile.style.display = 'flex';
+  if (e.target.id === 'menu-button-mobile') alteraDisplay(menuMobile, 'flex', 1);
+  if (e.target.id === 'menuClose') alteraDisplay(menuMobile, 'none', 1);
+  if (e.target.id === 'cart') alteraDisplay(cartPainel, 'none', 2);
 
-  if (e.target.id === 'menuClose') menuMobile.style.display = 'none';
-
-  if (e.target.id === 'cart') {
-    cartPainel.style.display = cartPainel.style.display === 'none' ? 'flex' : 'none';
-  }
 
   for (let imagem = 1; imagem < 6; imagem++) {
     if (e.target.id === `img${imagem}`) {
@@ -58,22 +66,12 @@ document.addEventListener('click', e => {
       MimagemPrincipal.setAttribute('src', `./assets/image-product-${imagem}.jpg`)
     }
 
-    if (e.target.id === 'principal') mainTop.style.display = 'flex';
-
-    if (e.target.id === 'closeImg') mainTop.style.display = 'none';
+    if (e.target.id === 'principal') alteraDisplay(mainTop, 'flex',1);
+    if (e.target.id === 'closeImg') alteraDisplay(mainTop, 'none',1);
   }
 
-  if (e.target.id === 'minus') {
-    quantidadeItens--;
-    if (quantidadeItens < 0) quantidadeItens = 0;
-    quantidade.innerHTML = quantidadeItens;
-  }
-
-  if (e.target.id === 'plus') {
-    quantidadeItens++;
-    if (quantidadeItens > 10) quantidadeItens = 10;
-    quantidade.innerHTML = quantidadeItens;
-  }
+  if (e.target.id === 'minus') quantidadeMudanca('minus', quantidade);
+  if (e.target.id === 'plus') quantidadeMudanca('plus', quantidade);
 
   if (e.target.id === 'buttonCart') Number(document.querySelector('#quantidade').innerText) === 0 ? void (0) : addToCart();
 
@@ -103,8 +101,8 @@ function addToCart() {
   button.innerText = 'CheckOut';
 
   const remove = document.createElement('img');
-  remove.setAttribute('src','./assets/icon-delete.svg');
-  remove.setAttribute('id','removeCart');
+  remove.setAttribute('src', './assets/icon-delete.svg');
+  remove.setAttribute('id', 'removeCart');
 
   divText.appendChild(p);
   divText.appendChild(preco);
@@ -118,7 +116,7 @@ function addToCart() {
   cartModify.appendChild(div);
 }
 
-function resetCart(){
+function resetCart() {
   cartModify.innerHTML = '';
   const p = document.createElement('p');
   p.innerHTML = 'Your cart empty.';
